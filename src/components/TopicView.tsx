@@ -1,217 +1,143 @@
-
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Play, BookOpen, Code, Clock } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { VideoPlayer } from './VideoPlayer';
+import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
+import { VideoTutorial } from './VideoTutorial';
+import { MCQ } from './MCQ';
+import { CodingProblem } from './CodingProblem';
 import { QuizView } from './QuizView';
-import { CodingProblems } from './CodingProblems';
 
 interface TopicViewProps {
   topic: string;
   onBack: () => void;
-  onProgressUpdate: () => void;
 }
 
 interface VideoTutorial {
-  id: string;
+  id: number;
   title: string;
-  description: string;
-  video_url: string;
-  platform: string;
-  difficulty: string;
-  duration_minutes: number;
+  url: string;
+  topic: string;
 }
 
 interface MCQ {
-  id: string;
+  id: number;
   question: string;
-  option_a: string;
-  option_b: string;
-  option_c: string;
-  option_d: string;
+  options: string[];
   correct_answer: string;
-  explanation: string;
+  topic: string;
   difficulty: string;
 }
 
 interface CodingProblem {
-  id: string;
+  id: number;
   title: string;
   description: string;
-  platform: string;
-  problem_url: string;
+  topic: string;
   difficulty: string;
-  tags: string[];
+  solution: string;
 }
 
-export const TopicView = ({ topic, onBack, onProgressUpdate }: TopicViewProps) => {
+export const TopicView = ({ topic, onBack }: TopicViewProps) => {
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState('videos');
   const [videos, setVideos] = useState<VideoTutorial[]>([]);
   const [mcqs, setMcqs] = useState<MCQ[]>([]);
-  const [problems, setProblems] = useState<CodingProblem[]>([]);
-  const [selectedVideo, setSelectedVideo] = useState<VideoTutorial | null>(null);
-  const [showQuiz, setShowQuiz] = useState(false);
-  const [quizDifficulty, setQuizDifficulty] = useState<string>('beginner');
-  const { user } = useAuth();
+  const [codingProblems, setCodingProblems] = useState<CodingProblem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchTopicContent();
+    const fetchContent = async () => {
+      try {
+        const topicType = topic as Database['public']['Enums']['topic_type'];
+        
+        // Fetch videos
+        const { data: videosData } = await supabase
+          .from('video_tutorials')
+          .select('*')
+          .eq('topic', topicType);
+
+        // Fetch MCQs
+        const { data: mcqsData } = await supabase
+          .from('mcqs')
+          .select('*')
+          .eq('topic', topicType);
+
+        // Fetch coding problems
+        const { data: problemsData } = await supabase
+          .from('coding_problems')
+          .select('*')
+          .eq('topic', topicType);
+
+        setVideos(videosData || []);
+        setMcqs(mcqsData || []);
+        setCodingProblems(problemsData || []);
+      } catch (error) {
+        console.error('Error fetching content:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContent();
   }, [topic]);
 
-  const fetchTopicContent = async () => {
-    // Fetch videos
-    const { data: videosData } = await supabase
-      .from('video_tutorials')
-      .select('*')
-      .eq('topic', topic)
-      .order('difficulty');
-    
-    // Fetch MCQs
-    const { data: mcqsData } = await supabase
-      .from('mcqs')
-      .select('*')
-      .eq('topic', topic);
-    
-    // Fetch coding problems
-    const { data: problemsData } = await supabase
-      .from('coding_problems')
-      .select('*')
-      .eq('topic', topic);
-
-    setVideos(videosData || []);
-    setMcqs(mcqsData || []);
-    setProblems(problemsData || []);
-  };
-
-  const topicTitles: Record<string, string> = {
-    strings: 'Strings',
-    basics: 'Programming Basics',
-    bit_manipulation: 'Bit Manipulation',
-    sorting: 'Sorting Algorithms',
-    searching: 'Searching Algorithms',
-    hashmaps: 'Hash Maps'
-  };
-
-  const difficultyColors = {
-    beginner: 'bg-green-100 text-green-800',
-    medium: 'bg-yellow-100 text-yellow-800',
-    high: 'bg-red-100 text-red-800'
-  };
-
-  if (selectedVideo) {
-    return (
-      <VideoPlayer
-        video={selectedVideo}
-        onBack={() => setSelectedVideo(null)}
-        onComplete={onProgressUpdate}
-      />
-    );
-  }
-
-  if (showQuiz) {
-    return (
-      <QuizView
-        topic={topic}
-        difficulty={quizDifficulty}
-        mcqs={mcqs.filter(mcq => mcq.difficulty === quizDifficulty)}
-        onBack={() => setShowQuiz(false)}
-        onComplete={onProgressUpdate}
-      />
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center h-16">
-            <Button variant="ghost" onClick={onBack} className="mr-4">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Topics
-            </Button>
-            <h1 className="text-2xl font-bold text-gray-900">{topicTitles[topic]}</h1>
-          </div>
-        </div>
-      </div>
+    <div className="container mx-auto py-8">
+      <Button variant="ghost" onClick={onBack} className="mb-4">
+        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
+      </Button>
 
-      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <Tabs defaultValue="videos" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="videos">Video Tutorials</TabsTrigger>
-            <TabsTrigger value="quiz">Practice Quiz</TabsTrigger>
-            <TabsTrigger value="problems">Coding Problems</TabsTrigger>
-          </TabsList>
+      <h2 className="text-3xl font-bold mb-4 capitalize">{topic}</h2>
 
-          <TabsContent value="videos" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Tabs defaultValue="videos" className="w-full">
+        <TabsList>
+          <TabsTrigger value="videos">Videos</TabsTrigger>
+          <TabsTrigger value="mcqs">MCQs</TabsTrigger>
+          <TabsTrigger value="coding">Coding Problems</TabsTrigger>
+          <TabsTrigger value="quiz">Quiz</TabsTrigger>
+        </TabsList>
+        <TabsContent value="videos">
+          {loading ? (
+            <p>Loading videos...</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {videos.map((video) => (
-                <Card key={video.id} className="cursor-pointer hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <Badge className={difficultyColors[video.difficulty as keyof typeof difficultyColors]}>
-                        {video.difficulty}
-                      </Badge>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {video.duration_minutes}min
-                      </div>
-                    </div>
-                    <CardTitle className="text-lg">{video.title}</CardTitle>
-                    <CardDescription>{video.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button onClick={() => setSelectedVideo(video)} className="w-full">
-                      <Play className="h-4 w-4 mr-2" />
-                      Watch Video
-                    </Button>
-                  </CardContent>
-                </Card>
+                <VideoTutorial key={video.id} video={video} />
               ))}
             </div>
-          </TabsContent>
-
-          <TabsContent value="quiz" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {['beginner', 'medium', 'high'].map((difficulty) => {
-                const topicMcqs = mcqs.filter(mcq => mcq.difficulty === difficulty);
-                return (
-                  <Card key={difficulty}>
-                    <CardHeader>
-                      <CardTitle className="flex items-center">
-                        <BookOpen className="h-5 w-5 mr-2" />
-                        {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Quiz
-                      </CardTitle>
-                      <CardDescription>
-                        {topicMcqs.length} question{topicMcqs.length !== 1 ? 's' : ''} available
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Button 
-                        onClick={() => {
-                          setQuizDifficulty(difficulty);
-                          setShowQuiz(true);
-                        }}
-                        className="w-full"
-                        disabled={topicMcqs.length === 0}
-                      >
-                        Start Quiz
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+          )}
+        </TabsContent>
+        <TabsContent value="mcqs">
+          {loading ? (
+            <p>Loading MCQs...</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {mcqs.map((mcq) => (
+                <MCQ key={mcq.id} mcq={mcq} />
+              ))}
             </div>
-          </TabsContent>
-
-          <TabsContent value="problems" className="mt-6">
-            <CodingProblems problems={problems} onProgressUpdate={onProgressUpdate} />
-          </TabsContent>
-        </Tabs>
-      </main>
+          )}
+        </TabsContent>
+        <TabsContent value="coding">
+          {loading ? (
+            <p>Loading coding problems...</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {codingProblems.map((problem) => (
+                <CodingProblem key={problem.id} problem={problem} />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+         <TabsContent value="quiz">
+          <QuizView topic={topic} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
