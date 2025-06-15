@@ -9,7 +9,288 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      coding_problems: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          id: string
+          platform: Database["public"]["Enums"]["platform_type"]
+          problem_url: string
+          tags: string[] | null
+          title: string
+          topic: Database["public"]["Enums"]["topic_type"]
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          id?: string
+          platform: Database["public"]["Enums"]["platform_type"]
+          problem_url: string
+          tags?: string[] | null
+          title: string
+          topic: Database["public"]["Enums"]["topic_type"]
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          id?: string
+          platform?: Database["public"]["Enums"]["platform_type"]
+          problem_url?: string
+          tags?: string[] | null
+          title?: string
+          topic?: Database["public"]["Enums"]["topic_type"]
+        }
+        Relationships: []
+      }
+      mcqs: {
+        Row: {
+          correct_answer: string
+          created_at: string | null
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          explanation: string | null
+          id: string
+          option_a: string
+          option_b: string
+          option_c: string
+          option_d: string
+          question: string
+          topic: Database["public"]["Enums"]["topic_type"]
+        }
+        Insert: {
+          correct_answer: string
+          created_at?: string | null
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          explanation?: string | null
+          id?: string
+          option_a: string
+          option_b: string
+          option_c: string
+          option_d: string
+          question: string
+          topic: Database["public"]["Enums"]["topic_type"]
+        }
+        Update: {
+          correct_answer?: string
+          created_at?: string | null
+          difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          explanation?: string | null
+          id?: string
+          option_a?: string
+          option_b?: string
+          option_c?: string
+          option_d?: string
+          question?: string
+          topic?: Database["public"]["Enums"]["topic_type"]
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          updated_at: string | null
+          username: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id: string
+          updated_at?: string | null
+          username: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          updated_at?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
+      quiz_sessions: {
+        Row: {
+          completed_at: string | null
+          correct_answers: number | null
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          id: string
+          score: number | null
+          started_at: string | null
+          time_limit_minutes: number | null
+          topic: Database["public"]["Enums"]["topic_type"]
+          total_questions: number
+          user_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          correct_answers?: number | null
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          id?: string
+          score?: number | null
+          started_at?: string | null
+          time_limit_minutes?: number | null
+          topic: Database["public"]["Enums"]["topic_type"]
+          total_questions: number
+          user_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          correct_answers?: number | null
+          difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          id?: string
+          score?: number | null
+          started_at?: string | null
+          time_limit_minutes?: number | null
+          topic?: Database["public"]["Enums"]["topic_type"]
+          total_questions?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_coding_progress: {
+        Row: {
+          attempted: boolean | null
+          attempted_at: string | null
+          id: string
+          problem_id: string | null
+          solved: boolean | null
+          solved_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          attempted?: boolean | null
+          attempted_at?: string | null
+          id?: string
+          problem_id?: string | null
+          solved?: boolean | null
+          solved_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          attempted?: boolean | null
+          attempted_at?: string | null
+          id?: string
+          problem_id?: string | null
+          solved?: boolean | null
+          solved_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_coding_progress_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "coding_problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_mcq_attempts: {
+        Row: {
+          attempted_at: string | null
+          id: string
+          is_correct: boolean
+          mcq_id: string | null
+          selected_answer: string
+          user_id: string | null
+        }
+        Insert: {
+          attempted_at?: string | null
+          id?: string
+          is_correct: boolean
+          mcq_id?: string | null
+          selected_answer: string
+          user_id?: string | null
+        }
+        Update: {
+          attempted_at?: string | null
+          id?: string
+          is_correct?: boolean
+          mcq_id?: string | null
+          selected_answer?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_mcq_attempts_mcq_id_fkey"
+            columns: ["mcq_id"]
+            isOneToOne: false
+            referencedRelation: "mcqs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_video_progress: {
+        Row: {
+          completed: boolean | null
+          completed_at: string | null
+          id: string
+          user_id: string | null
+          video_id: string | null
+        }
+        Insert: {
+          completed?: boolean | null
+          completed_at?: string | null
+          id?: string
+          user_id?: string | null
+          video_id?: string | null
+        }
+        Update: {
+          completed?: boolean | null
+          completed_at?: string | null
+          id?: string
+          user_id?: string | null
+          video_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_video_progress_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "video_tutorials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_tutorials: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          duration_minutes: number | null
+          id: string
+          platform: string
+          title: string
+          topic: Database["public"]["Enums"]["topic_type"]
+          video_url: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          duration_minutes?: number | null
+          id?: string
+          platform: string
+          title: string
+          topic: Database["public"]["Enums"]["topic_type"]
+          video_url: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          duration_minutes?: number | null
+          id?: string
+          platform?: string
+          title?: string
+          topic?: Database["public"]["Enums"]["topic_type"]
+          video_url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +299,20 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      difficulty_level: "beginner" | "medium" | "high"
+      platform_type:
+        | "leetcode"
+        | "hackerrank"
+        | "codeforces"
+        | "codechef"
+        | "geeksforgeeks"
+      topic_type:
+        | "strings"
+        | "basics"
+        | "bit_manipulation"
+        | "sorting"
+        | "searching"
+        | "hashmaps"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +427,23 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      difficulty_level: ["beginner", "medium", "high"],
+      platform_type: [
+        "leetcode",
+        "hackerrank",
+        "codeforces",
+        "codechef",
+        "geeksforgeeks",
+      ],
+      topic_type: [
+        "strings",
+        "basics",
+        "bit_manipulation",
+        "sorting",
+        "searching",
+        "hashmaps",
+      ],
+    },
   },
 } as const
