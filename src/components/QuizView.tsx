@@ -1,8 +1,8 @@
+
 import { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/types/supabase';
+import { Database } from '@/integrations/supabase/types';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
@@ -12,25 +12,29 @@ import { toast } from 'sonner';
 interface MCQ {
   id: string;
   question: string;
-  options: string[];
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
   correct_answer: string;
   topic: string;
   difficulty: string;
 }
 
-export const QuizView = () => {
-  const { user } = useAuth();
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+interface QuizViewProps {
+  topic: string;
+}
 
-  const topic = searchParams.get('topic');
+export const QuizView = ({ topic }: QuizViewProps) => {
+  const { user } = useAuth();
+
   const [mcqs, setMcqs] = useState<MCQ[]>([]);
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const [difficulty, setDifficulty] = useState<string>('easy');
+  const [difficulty, setDifficulty] = useState<string>('beginner');
   const [timeLimit, setTimeLimit] = useState(10);
 
   useEffect(() => {
@@ -112,6 +116,15 @@ export const QuizView = () => {
     }
   };
 
+  const getOptions = (mcq: MCQ) => {
+    return [
+      { value: 'A', label: mcq.option_a },
+      { value: 'B', label: mcq.option_b },
+      { value: 'C', label: mcq.option_c },
+      { value: 'D', label: mcq.option_d }
+    ];
+  };
+
   if (loading) {
     return <div>Loading quiz...</div>;
   }
@@ -125,31 +138,37 @@ export const QuizView = () => {
       <div className="container mx-auto mt-8 p-4">
         <h2 className="text-2xl font-bold mb-4">Quiz Completed!</h2>
         <p className="mb-2">Your score: {score.toFixed(1)}%</p>
-        <Button onClick={() => navigate(`/topic?topic=${topic}`)}>Back to Topic</Button>
+        <Button onClick={() => window.location.reload()}>Take Another Quiz</Button>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto mt-8 p-4">
-      <h2 className="text-2xl font-bold mb-4">Quiz on {topic}</h2>
+      <h2 className="text-2xl font-bold mb-4 capitalize">Quiz on {topic}</h2>
 
       <div className="mb-4">
         <Label htmlFor="difficulty" className="block text-sm font-medium text-gray-700">
           Difficulty:
         </Label>
-        <RadioGroup defaultValue="easy" className="flex gap-2 mt-2" onValueChange={(value) => setDifficulty(value)}>
-          <RadioGroupItem value="easy" id="r1" />
-          <Label htmlFor="r1">Easy</Label>
-          <RadioGroupItem value="medium" id="r2" />
-          <Label htmlFor="r2">Medium</Label>
-          <RadioGroupItem value="hard" id="r3" />
-          <Label htmlFor="r3">Hard</Label>
+        <RadioGroup defaultValue="beginner" className="flex gap-2 mt-2" onValueChange={(value) => setDifficulty(value)}>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="beginner" id="r1" />
+            <Label htmlFor="r1">Beginner</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="medium" id="r2" />
+            <Label htmlFor="r2">Medium</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="high" id="r3" />
+            <Label htmlFor="r3">High</Label>
+          </div>
         </RadioGroup>
       </div>
 
-      <div className="mb-4">
-        <Label htmlFor="timeLimit" className="block text-sm font-medium text-gray-700">
+      <div className="mb-6">
+        <Label htmlFor="timeLimit" className="block text-sm font-medium text-gray-700 mb-2">
           Time Limit (minutes): {timeLimit}
         </Label>
         <Slider
@@ -163,29 +182,33 @@ export const QuizView = () => {
         />
       </div>
 
-      {mcqs.map((mcq, index) => (
-        <div key={mcq.id} className="mb-6 p-4 border rounded-md">
-          <p className="mb-2">{index + 1}. {mcq.question}</p>
-          {mcq.options.map((option) => (
-            <div key={option} className="flex items-center mb-2">
-              <input
-                type="radio"
-                id={`${mcq.id}-${option}`}
-                name={`question-${index}`}
-                value={option}
-                checked={userAnswers[index] === option}
-                onChange={(e) => handleAnswerChange(index, e.target.value)}
-                className="mr-2"
-              />
-              <label htmlFor={`${mcq.id}-${option}`}>{option}</label>
+      {mcqs.length === 0 ? (
+        <p>No questions available for this topic and difficulty level.</p>
+      ) : (
+        <>
+          {mcqs.map((mcq, index) => (
+            <div key={mcq.id} className="mb-6 p-4 border rounded-md">
+              <p className="mb-4 font-medium">{index + 1}. {mcq.question}</p>
+              <RadioGroup value={userAnswers[index]} onValueChange={(value) => handleAnswerChange(index, value)}>
+                {getOptions(mcq).map((option) => (
+                  <div key={option.value} className="flex items-center space-x-2">
+                    <RadioGroupItem value={option.value} id={`${mcq.id}-${option.value}`} />
+                    <Label htmlFor={`${mcq.id}-${option.value}`}>{option.value}. {option.label}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
             </div>
           ))}
-        </div>
-      ))}
 
-      <Button onClick={handleSubmitQuiz} disabled={userAnswers.some(answer => answer === '')} variant="outline">
-        Submit Quiz
-      </Button>
+          <Button 
+            onClick={handleSubmitQuiz} 
+            disabled={userAnswers.some(answer => answer === '')} 
+            className="w-full"
+          >
+            Submit Quiz
+          </Button>
+        </>
+      )}
     </div>
   );
 };
