@@ -10,7 +10,8 @@ import { Database } from '@/integrations/supabase/types';
 import { VideoTutorial } from './VideoTutorial';
 import { MCQ } from './MCQ';
 import { CodingProblem } from './CodingProblem';
-import { QuizView } from './QuizView';
+import { CheatSheet } from './CheatSheet';
+import { UserNotes } from './UserNotes';
 
 interface TopicViewProps {
   topic: string;
@@ -70,11 +71,12 @@ export const TopicView = ({ topic, onBack }: TopicViewProps) => {
           .select('*')
           .eq('topic', topicType);
 
-        // Fetch MCQs
+        // Fetch MCQs (limit to 5 per topic)
         const { data: mcqsData } = await supabase
           .from('mcqs')
           .select('*')
-          .eq('topic', topicType);
+          .eq('topic', topicType)
+          .limit(5);
 
         // Fetch coding problems
         const { data: problemsData } = await supabase
@@ -106,9 +108,9 @@ export const TopicView = ({ topic, onBack }: TopicViewProps) => {
       <Tabs defaultValue="videos" className="w-full">
         <TabsList>
           <TabsTrigger value="videos">Videos</TabsTrigger>
-          <TabsTrigger value="mcqs">MCQs</TabsTrigger>
+          <TabsTrigger value="cheatsheet">Cheat Sheet</TabsTrigger>
+          <TabsTrigger value="mcqs">MCQs (5)</TabsTrigger>
           <TabsTrigger value="coding">Coding Problems</TabsTrigger>
-          <TabsTrigger value="quiz">Quiz</TabsTrigger>
         </TabsList>
         <TabsContent value="videos">
           {loading ? (
@@ -122,6 +124,14 @@ export const TopicView = ({ topic, onBack }: TopicViewProps) => {
               ))}
             </div>
           )}
+        </TabsContent>
+        <TabsContent value="cheatsheet">
+          <div className="space-y-8">
+            <CheatSheet topic={topic} />
+            <div className="border-t pt-8">
+              <UserNotes topic={topic} />
+            </div>
+          </div>
         </TabsContent>
         <TabsContent value="mcqs">
           {loading ? (
@@ -148,9 +158,6 @@ export const TopicView = ({ topic, onBack }: TopicViewProps) => {
               ))}
             </div>
           )}
-        </TabsContent>
-        <TabsContent value="quiz">
-          <QuizView topic={topic} />
         </TabsContent>
       </Tabs>
     </div>
