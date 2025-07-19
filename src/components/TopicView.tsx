@@ -109,6 +109,7 @@ export const TopicView = ({ topic, onBack }: TopicViewProps) => {
         <TabsList>
           <TabsTrigger value="videos">Videos</TabsTrigger>
           <TabsTrigger value="cheatsheet">Cheat Sheet</TabsTrigger>
+          <TabsTrigger value="notes">Notes</TabsTrigger>
           <TabsTrigger value="mcqs">MCQs (5)</TabsTrigger>
           <TabsTrigger value="coding">Coding Problems</TabsTrigger>
         </TabsList>
@@ -126,12 +127,10 @@ export const TopicView = ({ topic, onBack }: TopicViewProps) => {
           )}
         </TabsContent>
         <TabsContent value="cheatsheet">
-          <div className="space-y-8">
-            <CheatSheet topic={topic} />
-            <div className="border-t pt-8">
-              <UserNotes topic={topic} />
-            </div>
-          </div>
+          <CheatSheet topic={topic} />
+        </TabsContent>
+        <TabsContent value="notes">
+          <UserNotes topic={topic} />
         </TabsContent>
         <TabsContent value="mcqs">
           {loading ? (
