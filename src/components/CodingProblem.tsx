@@ -85,7 +85,8 @@ export const CodingProblem = ({ problem }: CodingProblemProps) => {
       const { error } = await supabase
         .from('user_coding_progress')
         .upsert(updateData, {
-          onConflict: 'user_id,problem_id'
+          onConflict: 'user_id,problem_id',
+          ignoreDuplicates: false
         });
 
       if (error) throw error;
