@@ -1,11 +1,14 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from '@/components/ui/label';
 import { CheckCircle, XCircle } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface MCQProps {
   mcq: {
@@ -17,13 +20,38 @@ interface MCQProps {
     option_d: string;
     correct_answer: string;
     explanation?: string;
+    topic: string;
     difficulty: string;
   };
 }
 
 export const MCQ = ({ mcq }: MCQProps) => {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
   const [showResult, setShowResult] = useState(false);
+  const [hasAttempted, setHasAttempted] = useState(false);
+
+  useEffect(() => {
+    checkIfAttempted();
+  }, [mcq.id, user]);
+
+  const checkIfAttempted = async () => {
+    if (!user) return;
+
+    try {
+      const { data } = await supabase
+        .from('user_mcq_attempts')
+        .select('id')
+        .eq('mcq_id', mcq.id)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      setHasAttempted(!!data);
+    } catch (error) {
+      console.error('Error checking MCQ attempt:', error);
+    }
+  };
 
   const options = [
     { value: 'A', label: mcq.option_a },
@@ -38,9 +66,32 @@ export const MCQ = ({ mcq }: MCQProps) => {
     high: 'bg-red-100 text-red-800'
   };
 
-  const handleSubmit = () => {
-    if (selectedAnswer) {
+  const handleSubmit = async () => {
+    if (selectedAnswer && user) {
       setShowResult(true);
+      
+      // Save the attempt to database
+      try {
+        const isCorrect = selectedAnswer === mcq.correct_answer;
+        
+        await supabase
+          .from('user_mcq_attempts')
+          .insert({
+            mcq_id: mcq.id,
+            user_id: user.id,
+            selected_answer: selectedAnswer,
+            is_correct: isCorrect
+          });
+
+        setHasAttempted(true);
+        
+        toast({
+          title: isCorrect ? "Correct!" : "Incorrect",
+          description: isCorrect ? "Great job!" : "Keep practicing!",
+        });
+      } catch (error) {
+        console.error('Error saving MCQ attempt:', error);
+      }
     }
   };
 
@@ -53,15 +104,20 @@ export const MCQ = ({ mcq }: MCQProps) => {
           <Badge className={difficultyColors[mcq.difficulty as keyof typeof difficultyColors]}>
             {mcq.difficulty}
           </Badge>
-          {showResult && (
-            <div className="flex items-center">
-              {isCorrect ? (
-                <CheckCircle className="h-5 w-5 text-green-500" />
-              ) : (
-                <XCircle className="h-5 w-5 text-red-500" />
-              )}
-            </div>
-          )}
+          <div className="flex items-center space-x-2">
+            {hasAttempted && !showResult && (
+              <Badge variant="outline">Attempted</Badge>
+            )}
+            {showResult && (
+              <div className="flex items-center">
+                {isCorrect ? (
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                ) : (
+                  <XCircle className="h-5 w-5 text-red-500" />
+                )}
+              </div>
+            )}
+          </div>
         </div>
         <CardTitle className="text-lg">{mcq.question}</CardTitle>
       </CardHeader>
