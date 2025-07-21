@@ -43,26 +43,39 @@ export const CodingProblem = ({ problem }: CodingProblemProps) => {
   };
 
   useEffect(() => {
+    console.log('CodingProblem useEffect triggered for problem:', problem.id, 'user:', user?.id);
     fetchProgress();
   }, [problem.id, user]);
 
   const fetchProgress = async () => {
     if (!user) {
+      console.log('No user found, skipping progress fetch');
       setLoading(false);
       return;
     }
 
     try {
-      const { data } = await supabase
+      console.log('Fetching progress for problem:', problem.id, 'user:', user.id);
+      const { data, error } = await supabase
         .from('user_coding_progress')
         .select('attempted, solved')
         .eq('problem_id', problem.id)
         .eq('user_id', user.id)
         .maybeSingle();
 
+      if (error) {
+        console.error('Error fetching progress:', error);
+        throw error;
+      }
+
+      console.log('Progress data fetched:', data);
       if (data) {
         setAttempted(data.attempted || false);
         setSolved(data.solved || false);
+      } else {
+        // No progress record exists yet
+        setAttempted(false);
+        setSolved(false);
       }
     } catch (error) {
       console.error('Error fetching progress:', error);
@@ -72,7 +85,12 @@ export const CodingProblem = ({ problem }: CodingProblemProps) => {
   };
 
   const updateProgress = async (field: 'attempted' | 'solved', value: boolean) => {
-    if (!user) return;
+    if (!user) {
+      console.log('No user found, cannot update progress');
+      return;
+    }
+
+    console.log('Updating progress:', field, value, 'for problem:', problem.id);
 
     try {
       const updateData = {
@@ -82,6 +100,8 @@ export const CodingProblem = ({ problem }: CodingProblemProps) => {
         problem_id: problem.id,
       };
 
+      console.log('Update data:', updateData);
+
       const { error } = await supabase
         .from('user_coding_progress')
         .upsert(updateData, {
@@ -89,7 +109,12 @@ export const CodingProblem = ({ problem }: CodingProblemProps) => {
           ignoreDuplicates: false
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Upsert error:', error);
+        throw error;
+      }
+
+      console.log('Progress updated successfully');
 
       if (field === 'attempted') {
         setAttempted(value);
