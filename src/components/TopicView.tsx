@@ -61,6 +61,8 @@ export const TopicView = ({ topic, onBack }: TopicViewProps) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('TopicView: fetching content for topic:', topic, 'user:', user?.id);
+    
     const fetchContent = async () => {
       try {
         const topicType = topic as Database['public']['Enums']['topic_type'];
@@ -84,6 +86,8 @@ export const TopicView = ({ topic, onBack }: TopicViewProps) => {
           .select('*')
           .eq('topic', topicType);
 
+        console.log('TopicView: fetched data - videos:', videosData?.length, 'mcqs:', mcqsData?.length, 'problems:', problemsData?.length);
+        
         setVideos(videosData || []);
         setMcqs(mcqsData || []);
         setCodingProblems(problemsData || []);
@@ -95,7 +99,7 @@ export const TopicView = ({ topic, onBack }: TopicViewProps) => {
     };
 
     fetchContent();
-  }, [topic]);
+  }, [topic, user]);
 
   return (
     <div className="container mx-auto py-8">
@@ -152,9 +156,12 @@ export const TopicView = ({ topic, onBack }: TopicViewProps) => {
             <p>No coding problems available for this topic.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {codingProblems.map((problem) => (
-                <CodingProblem key={problem.id} problem={problem} />
-              ))}
+              {codingProblems.map((problem) => {
+                console.log('Rendering CodingProblem component for:', problem.id, problem.title);
+                return (
+                  <CodingProblem key={problem.id} problem={problem} />
+                );
+              })}
             </div>
           )}
         </TabsContent>
