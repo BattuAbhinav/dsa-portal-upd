@@ -59,28 +59,36 @@ export const VideoTutorial = ({ video }: VideoTutorialProps) => {
     }
   };
 
-  const markAsCompleted = async () => {
+  const toggleCompleted = async (completed: boolean) => {
     if (!user) return;
 
     try {
-      await supabase
-        .from('user_video_progress')
-        .upsert({
-          user_id: user.id,
-          video_id: video.id,
-          completed: true,
-          completed_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id,video_id'
-        });
+      if (completed) {
+        await supabase
+          .from('user_video_progress')
+          .upsert({
+            user_id: user.id,
+            video_id: video.id,
+            completed: true,
+            completed_at: new Date().toISOString()
+          }, {
+            onConflict: 'user_id,video_id'
+          });
+      } else {
+        await supabase
+          .from('user_video_progress')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('video_id', video.id);
+      }
 
-      setIsCompleted(true);
+      setIsCompleted(completed);
       toast({
-        title: "Video completed!",
-        description: "Progress has been saved.",
+        title: completed ? "Video completed!" : "Video unmarked",
+        description: completed ? "Progress has been saved." : "Progress has been removed.",
       });
     } catch (error) {
-      console.error('Error marking video as completed:', error);
+      console.error('Error updating video progress:', error);
       toast({
         title: "Error",
         description: "Failed to save progress.",
@@ -130,11 +138,7 @@ export const VideoTutorial = ({ video }: VideoTutorialProps) => {
               <Checkbox
                 id={`completed-${video.id}`}
                 checked={isCompleted}
-                onCheckedChange={(checked) => {
-                  if (checked) {
-                    markAsCompleted();
-                  }
-                }}
+                onCheckedChange={(checked) => toggleCompleted(checked as boolean)}
               />
               <label htmlFor={`completed-${video.id}`} className="text-sm font-medium">
                 Mark as completed

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { DashboardHeader } from './DashboardHeader';
-import { TopicCard } from './TopicCard';
+import { TopicCardWithProgress } from './TopicCardWithProgress';
 import { TopicView } from './TopicView';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -66,12 +66,11 @@ export const Dashboard = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {topics.map((topic) => (
-                <TopicCard
+                <TopicCardWithProgress
                   key={topic.id}
                   topic={topic.id}
                   title={topic.title}
                   description={topic.description}
-                  progress={topic.progress}
                   onClick={() => handleTopicClick(topic.id)}
                 />
               ))}

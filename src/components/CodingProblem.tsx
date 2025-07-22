@@ -81,12 +81,36 @@ export const CodingProblem = ({ problem }: CodingProblemProps) => {
     if (!user) return;
 
     try {
+      // When updating, we need to get current values first
+      const { data: existingData } = await supabase
+        .from('user_coding_progress')
+        .select('attempted, solved, attempted_at, solved_at')
+        .eq('user_id', user.id)
+        .eq('problem_id', problem.id)
+        .single();
+
       const updateData = {
-        [field]: value,
-        [`${field}_at`]: value ? new Date().toISOString() : null,
         user_id: user.id,
         problem_id: problem.id,
+        attempted: field === 'attempted' ? value : (existingData?.attempted || false),
+        solved: field === 'solved' ? value : (existingData?.solved || false),
+        attempted_at: field === 'attempted' && value ? new Date().toISOString() : (existingData?.attempted_at || null),
+        solved_at: field === 'solved' && value ? new Date().toISOString() : (existingData?.solved_at || null),
       };
+
+      // If marking as solved, automatically mark as attempted too
+      if (field === 'solved' && value) {
+        updateData.attempted = true;
+        if (!updateData.attempted_at) {
+          updateData.attempted_at = new Date().toISOString();
+        }
+      }
+
+      // If unmarking attempted, also unmark solved
+      if (field === 'attempted' && !value) {
+        updateData.solved = false;
+        updateData.solved_at = null;
+      }
 
       const { error } = await supabase
         .from('user_coding_progress')
@@ -97,12 +121,16 @@ export const CodingProblem = ({ problem }: CodingProblemProps) => {
 
       if (error) throw error;
 
+      // Update local state
       if (field === 'attempted') {
         setAttempted(value);
+        if (!value) {
+          setSolved(false); // If unattempted, also unsolve
+        }
       } else {
         setSolved(value);
-        if (value && !attempted) {
-          setAttempted(true);
+        if (value) {
+          setAttempted(true); // If solved, mark as attempted
         }
       }
 
