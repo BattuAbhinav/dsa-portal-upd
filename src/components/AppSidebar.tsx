@@ -73,13 +73,13 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Navigation Section */}
-        <SidebarGroup className="px-3">
-          <SidebarGroupLabel className={`text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 ${collapsed ? 'px-2' : 'px-3'}`}>
+        <SidebarGroup className="px-4 py-2">
+          <SidebarGroupLabel className={`text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 ${collapsed ? 'px-1' : 'px-2'}`}>
             {!collapsed && "Navigation"}
           </SidebarGroupLabel>
           
-          <SidebarGroupContent>
-            <SidebarMenu className="space-y-2">
+          <SidebarGroupContent className="px-1">
+            <SidebarMenu className="space-y-3">
               {navigationItems.map((item) => {
                 const active = isActive(item.url);
                 return (
@@ -89,7 +89,7 @@ export function AppSidebar() {
                         to={item.url} 
                         end 
                         className={`
-                          group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-300 hover:scale-105
+                          group relative flex items-center gap-4 px-4 py-4 rounded-xl transition-all duration-300 hover:scale-105 min-h-[70px]
                           ${active 
                             ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg shadow-black/20 border border-white/20` 
                             : 'text-gray-600 hover:text-gray-900 hover:bg-white/60 hover:shadow-md'
@@ -97,8 +97,8 @@ export function AppSidebar() {
                         `}
                       >
                         {/* Icon with glow effect */}
-                        <div className="relative">
-                          <item.icon className={`w-5 h-5 transition-all duration-300 ${
+                        <div className="relative flex-shrink-0">
+                          <item.icon className={`w-6 h-6 transition-all duration-300 ${
                             active ? 'text-white' : 'text-gray-500 group-hover:text-gray-700'
                           }`} />
                           {active && (
@@ -107,13 +107,13 @@ export function AppSidebar() {
                         </div>
                         
                         {!collapsed && (
-                          <div className="flex flex-col flex-1 min-w-0">
-                            <span className={`font-semibold text-sm transition-colors duration-300 ${
+                          <div className="flex flex-col flex-1 min-w-0 py-1">
+                            <span className={`font-semibold text-base transition-colors duration-300 leading-tight ${
                               active ? 'text-white' : 'text-gray-700 group-hover:text-gray-900'
                             }`}>
                               {item.title}
                             </span>
-                            <span className={`text-xs transition-colors duration-300 ${
+                            <span className={`text-sm transition-colors duration-300 mt-1 leading-tight ${
                               active ? 'text-white/80' : 'text-gray-500 group-hover:text-gray-600'
                             }`}>
                               {item.description}
@@ -122,7 +122,7 @@ export function AppSidebar() {
                         )}
                         
                         {!collapsed && (
-                          <ChevronRight className={`w-4 h-4 transition-all duration-300 ${
+                          <ChevronRight className={`w-5 h-5 flex-shrink-0 transition-all duration-300 ${
                             active 
                               ? 'text-white/80 transform rotate-90' 
                               : 'text-gray-400 group-hover:text-gray-600 group-hover:translate-x-1'
@@ -131,7 +131,7 @@ export function AppSidebar() {
                         
                         {/* Active indicator dot for collapsed state */}
                         {collapsed && active && (
-                          <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-sm" />
+                          <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm" />
                         )}
                       </NavLink>
                     </SidebarMenuButton>
@@ -144,13 +144,13 @@ export function AppSidebar() {
 
         {/* Bottom decoration */}
         {!collapsed && (
-          <div className="absolute bottom-6 left-6 right-6">
-            <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg p-4 border border-gray-200/50">
-              <div className="flex items-center gap-2 mb-2">
+          <div className="absolute bottom-8 left-6 right-6">
+            <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl p-5 border border-gray-200/50">
+              <div className="flex items-center gap-2 mb-3">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-xs font-medium text-gray-600">All systems operational</span>
+                <span className="text-sm font-medium text-gray-600">All systems operational</span>
               </div>
-              <div className="text-xs text-gray-500">
+              <div className="text-sm text-gray-500">
                 Keep learning, keep growing! 🚀
               </div>
             </div>
