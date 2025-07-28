@@ -83,10 +83,10 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
   // For desktop, use enhanced sidebar layout
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full bg-gray-50">
         <AppSidebar />
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-w-0">
           <header className="h-16 flex items-center justify-between border-b border-gray-200/50 bg-white/95 backdrop-blur-md px-6 shadow-sm">
             <div className="flex items-center gap-4">
               <SidebarTrigger className="hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200" />

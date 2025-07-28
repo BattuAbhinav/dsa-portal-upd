@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Home, Trophy, TrendingUp, Calendar, ChevronRight, BookOpen } from "lucide-react";
+import { Home, Trophy, TrendingUp, Calendar, ChevronRight, BookOpen, Menu } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 
 import {
@@ -40,7 +40,7 @@ export const navigationItems = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const { state, toggleSidebar } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
