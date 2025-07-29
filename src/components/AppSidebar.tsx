@@ -85,11 +85,11 @@ export function AppSidebar() {
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <NavLink 
+                       <NavLink 
                         to={item.url} 
                         end 
                         className={`
-                          group relative flex items-center gap-4 px-4 py-4 rounded-xl transition-all duration-300 hover:scale-105 min-h-[70px]
+                          group relative flex items-center ${collapsed ? 'justify-center px-2' : 'gap-4 px-4'} py-4 rounded-xl transition-all duration-300 hover:scale-105 min-h-[70px]
                           ${active 
                             ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg shadow-black/20 border border-white/20` 
                             : 'text-gray-600 hover:text-gray-900 hover:bg-white/60 hover:shadow-md'
