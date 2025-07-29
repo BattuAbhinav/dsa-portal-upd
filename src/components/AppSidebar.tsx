@@ -49,7 +49,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className={`${collapsed ? "w-24" : "w-72"} transition-all duration-300 border-r border-gray-200/50 bg-gradient-to-b from-white to-gray-50/30 backdrop-blur-sm`}
+      className={`${collapsed ? "w-32" : "w-72"} transition-all duration-300 border-r border-gray-200/50 bg-gradient-to-b from-white to-gray-50/30 backdrop-blur-sm`}
       collapsible="icon"
     >
       <SidebarContent className="relative">
