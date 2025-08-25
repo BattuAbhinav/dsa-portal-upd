@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { User, Save } from 'lucide-react';
 
@@ -13,20 +14,65 @@ export const ProfileEdit = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
     if (user) {
       setEmail(user.email || '');
-      setUsername(user.user_metadata?.username || '');
+      fetchProfile();
     }
   }, [user]);
 
+  const fetchProfile = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+        console.error('Error fetching profile:', error);
+        return;
+      }
+
+      if (data) {
+        setProfile(data);
+        setUsername(data.username || '');
+        setEmail(data.email || '');
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
   const handleSave = async () => {
+    if (!user) return;
+    
     setLoading(true);
-    // For now, just show a success message since we don't have profile update in the hook
-    toast.success('Profile updated successfully!');
-    setLoading(false);
-    setIsOpen(false);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          username: username.trim(),
+          email: email.trim()
+        })
+        .eq('id', user.id);
+
+      if (error) {
+        toast.error('Failed to update profile: ' + error.message);
+      } else {
+        toast.success('Profile updated successfully!');
+        setProfile({ ...profile, username, email });
+        setIsOpen(false);
+      }
+    } catch (error) {
+      toast.error('An error occurred while updating your profile');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSignOut = async () => {
