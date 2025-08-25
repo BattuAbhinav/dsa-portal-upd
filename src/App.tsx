@@ -44,10 +44,10 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
             {/* Brand */}
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
-                <span className="text-white font-bold text-sm">C</span>
+                <span className="text-white font-bold text-xs">DSA</span>
               </div>
               <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                CodeLearn
+                DSA Portal
               </span>
             </div>
             

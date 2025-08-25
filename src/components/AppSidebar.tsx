@@ -56,13 +56,13 @@ export function AppSidebar() {
         {/* Brand Section */}
         <SidebarGroup className="px-3 py-6">
           <div className={`flex items-center gap-3 px-3 ${collapsed ? 'justify-center' : ''}`}>
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
-              <BookOpen className="w-4 h-4 text-white" />
-            </div>
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-sm">DSA</span>
+              </div>
             {!collapsed && (
               <div className="flex flex-col">
                 <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  CodeLearn
+                  DSA Portal
                 </span>
                 <span className="text-xs text-gray-500 font-medium">
                   Master Programming
@@ -142,13 +142,44 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {/* Stats Section */}
+        {!collapsed && (
+          <SidebarGroup className="px-4 py-2 mt-6">
+            <SidebarGroupLabel className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 px-2">
+              Your Stats
+            </SidebarGroupLabel>
+            <div className="space-y-3 px-2">
+              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-100">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-blue-700">Problems Solved</span>
+                  <span className="text-lg font-bold text-blue-800">42</span>
+                </div>
+                <div className="w-full bg-blue-200 rounded-full h-2">
+                  <div className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full" style={{width: '42%'}}></div>
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-100">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-green-700">Streak Days</span>
+                  <span className="text-lg font-bold text-green-800">7</span>
+                </div>
+                <div className="flex items-center text-xs text-green-600">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                  Keep it up!
+                </div>
+              </div>
+            </div>
+          </SidebarGroup>
+        )}
+
         {/* Bottom decoration */}
         {!collapsed && (
           <div className="absolute bottom-8 left-6 right-6">
-            <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl p-5 border border-gray-200/50">
+            <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl p-5 border border-purple-200/50">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-sm font-medium text-gray-600">All systems operational</span>
+                <span className="text-sm font-medium text-gray-600">Ready to code!</span>
               </div>
               <div className="text-sm text-gray-500">
                 Keep learning, keep growing! 🚀

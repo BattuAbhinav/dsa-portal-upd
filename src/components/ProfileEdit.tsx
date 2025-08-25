@@ -88,7 +88,7 @@ export const ProfileEdit = () => {
     <div className="flex items-center gap-2">
       <div className="flex items-center gap-2 text-sm text-gray-600">
         <User className="h-4 w-4" />
-        <span className="hidden md:inline">{user?.email}</span>
+        <span className="hidden md:inline">{profile?.username || user?.email}</span>
       </div>
       
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -122,7 +122,6 @@ export const ProfileEdit = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                disabled
               />
             </div>
           </div>
