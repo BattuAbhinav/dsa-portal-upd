@@ -14,6 +14,7 @@ import Contests from "./pages/Contests";
 import Progress from "./pages/Progress";
 import NotFound from "./pages/NotFound";
 import { AuthForm } from "@/components/AuthForm";
+import { ProfileEdit } from "@/components/ProfileEdit";
 
 const queryClient = new QueryClient();
 
@@ -59,15 +60,15 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
                     key={item.title}
                     to={item.url}
                     className={`
-                      flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200
+                      flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 min-w-fit
                       ${active 
                         ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md' 
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                       }
                     `}
                   >
-                    <item.icon className="w-4 h-4" />
-                    <span className="hidden xs:inline">{item.title}</span>
+                    <item.icon className="w-4 h-4 flex-shrink-0" />
+                    <span className="whitespace-nowrap">{item.title}</span>
                   </NavLink>
                 );
               })}
@@ -102,6 +103,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
             
             {/* Header actions */}
             <div className="flex items-center gap-3">
+              <ProfileEdit />
               <div className="hidden md:flex items-center gap-2 text-sm text-gray-500">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                 <span>Online</span>
