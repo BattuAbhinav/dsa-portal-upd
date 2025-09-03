@@ -52,7 +52,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
             </div>
             
             {/* Mobile Navigation */}
-            <nav className="flex items-center gap-1">
+            <nav className="flex items-center gap-2">
               {navigationItems.map((item) => {
                 const active = location.pathname === item.url;
                 return (
@@ -60,14 +60,14 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
                     key={item.title}
                     to={item.url}
                     className={`
-                      flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 min-w-fit
+                      flex items-center gap-3 px-5 py-3 rounded-xl text-base font-semibold transition-all duration-200 min-w-fit
                       ${active 
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md' 
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                       }
                     `}
                   >
-                    <item.icon className="w-4 h-4 flex-shrink-0" />
+                    <item.icon className="w-5 h-5 flex-shrink-0" />
                     <span className="whitespace-nowrap">{item.title}</span>
                   </NavLink>
                 );

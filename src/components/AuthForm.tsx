@@ -64,11 +64,11 @@ export const AuthForm = () => {
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signin-email">Email</Label>
+                  <Label htmlFor="signin-email">Username or Email</Label>
                   <Input
                     id="signin-email"
-                    type="email"
-                    placeholder="Enter your email"
+                    type="text"
+                    placeholder="Enter your username or email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required

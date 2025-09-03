@@ -38,9 +38,29 @@ export const useAuth = () => {
     return { error };
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (usernameOrEmail: string, password: string) => {
+    // First try to find the user's email by username if it's not an email
+    const isEmail = usernameOrEmail.includes('@');
+    
+    let emailToUse = usernameOrEmail;
+    
+    if (!isEmail) {
+      // Look up email by username in profiles table
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('username', usernameOrEmail)
+        .single();
+      
+      if (profile?.email) {
+        emailToUse = profile.email;
+      } else {
+        return { error: { message: 'Username not found' } };
+      }
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
-      email,
+      email: emailToUse,
       password
     });
     return { error };
