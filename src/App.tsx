@@ -40,19 +40,19 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
     return (
       <div className="min-h-screen w-full bg-gray-50">
         <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
-          <div className="flex items-center justify-between px-4 h-16">
+          <div className="flex items-center justify-between px-3 sm:px-4 h-14 sm:h-16">
             {/* Brand */}
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
                 <span className="text-white font-bold text-xs">DSA</span>
               </div>
-              <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-base sm:text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hidden xs:block">
                 DSA Portal
               </span>
             </div>
             
             {/* Mobile Navigation */}
-            <nav className="flex items-center gap-2">
+            <nav className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-hide">
               {navigationItems.map((item) => {
                 const active = location.pathname === item.url;
                 return (
@@ -60,22 +60,22 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
                     key={item.title}
                     to={item.url}
                     className={`
-                      flex items-center gap-3 px-5 py-3 rounded-xl text-base font-semibold transition-all duration-200 min-w-fit
+                      flex items-center gap-2 sm:gap-3 px-3 py-2 sm:px-5 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium sm:font-semibold transition-all duration-200 min-w-fit whitespace-nowrap
                       ${active 
                         ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                       }
                     `}
                   >
-                    <item.icon className="w-5 h-5 flex-shrink-0" />
-                    <span className="whitespace-nowrap">{item.title}</span>
+                    <item.icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <span className="hidden xs:inline sm:inline">{item.title}</span>
                   </NavLink>
                 );
               })}
             </nav>
           </div>
         </header>
-        <main className="flex-1">
+        <main className="flex-1 overflow-x-hidden">
           {children}
         </main>
       </div>

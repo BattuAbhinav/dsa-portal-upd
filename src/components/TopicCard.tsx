@@ -50,7 +50,7 @@ export const TopicCard = ({ topic, title, description, progress = 0, onClick }: 
   
   return (
     <Card 
-      className="group cursor-pointer transition-all duration-300 ease-out hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02] border-2 hover:border-transparent bg-gradient-to-br hover:from-white hover:to-gray-50/50 relative overflow-hidden"
+      className="group cursor-pointer transition-all duration-300 ease-out hover:shadow-2xl hover:shadow-blue-500/25 hover:-translate-y-1 sm:hover:-translate-y-2 hover:scale-[1.01] sm:hover:scale-[1.02] border-2 hover:border-transparent bg-gradient-to-br hover:from-white hover:to-gray-50/50 relative overflow-hidden touch-manipulation"
       onClick={onClick}
     >
       {/* Animated gradient border on hover */}
@@ -59,32 +59,32 @@ export const TopicCard = ({ topic, title, description, progress = 0, onClick }: 
       
       {/* Content */}
       <div className="relative z-10">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between mb-4">
+        <CardHeader className="pb-3 sm:pb-4 p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div className="relative">
-              <Icon className={`h-8 w-8 transition-all duration-300 ${getIconColor(topic)} group-hover:scale-110 group-hover:rotate-3`} />
+              <Icon className={`h-6 w-6 sm:h-8 sm:w-8 transition-all duration-300 ${getIconColor(topic)} group-hover:scale-110 group-hover:rotate-3`} />
               {/* Icon glow effect on hover */}
-              <div className={`absolute inset-0 h-8 w-8 bg-gradient-to-r ${getTopicGradient(topic)} opacity-0 group-hover:opacity-20 rounded-full blur-sm transition-opacity duration-300`} />
+              <div className={`absolute inset-0 h-6 w-6 sm:h-8 sm:w-8 bg-gradient-to-r ${getTopicGradient(topic)} opacity-0 group-hover:opacity-20 rounded-full blur-sm transition-opacity duration-300`} />
             </div>
             <Badge 
               variant="secondary" 
-              className="transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg"
+              className="transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg text-xs sm:text-sm px-2 py-1"
             >
               {progress}% Complete
             </Badge>
           </div>
-          <CardTitle className="text-xl transition-colors duration-300 group-hover:text-gray-800 group-hover:scale-[1.01]">
+          <CardTitle className="text-lg sm:text-xl transition-colors duration-300 group-hover:text-gray-800 group-hover:scale-[1.01] leading-tight">
             {title}
           </CardTitle>
-          <CardDescription className="transition-colors duration-300 group-hover:text-gray-600">
+          <CardDescription className="transition-colors duration-300 group-hover:text-gray-600 text-sm sm:text-base leading-relaxed">
             {description}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
           <div className="relative">
             <Progress 
               value={progress} 
-              className="w-full transition-all duration-300 group-hover:scale-[1.02]" 
+              className="w-full transition-all duration-300 group-hover:scale-[1.02] h-2 sm:h-3" 
             />
             {/* Progress bar glow effect */}
             <div className={`absolute inset-0 bg-gradient-to-r ${getTopicGradient(topic)} opacity-0 group-hover:opacity-10 rounded-full blur-sm transition-opacity duration-300`} />
